@@ -1,8 +1,9 @@
 (ns vijual.graphical
-  (:use [vijual]
+  (:use vijual
         clojure.contrib.math)
-  (:import (java.io File)
+  (:import (java.io File ByteArrayOutputStream)
            (javax.imageio ImageIO)
+           (org.apache.commons.codec.binary Base64)
            (java.awt Color)
            (java.awt.image BufferedImage)))
 
@@ -29,6 +30,20 @@
   [img name]
   (let [file (new File (str name ".png"))]
     (ImageIO/write (cast java.awt.image.BufferedImage img) "png" file)))
+
+(defn image-data
+  "Bytes of the PNG encoded image"
+  [img]
+  (let [baos (ByteArrayOutputStream.)
+	img (cast java.awt.image.BufferedImage img)]
+    (ImageIO/write img "png" baos)
+    (.toByteArray baos)))
+
+(defn image-data-uri
+  "Data URI for embedding in a web page"
+  [img]
+  (str "data:image/png;base64,\n"
+       (Base64/encodeBase64String (image-data img))))
 
 (def arrow-size 5)
 
